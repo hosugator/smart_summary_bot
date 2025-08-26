@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 class M4SummaryEmbedder:
     """M4 Mac 최적화 임베더 (TensorFlow 없음)"""
+    #대신  TF-IDF + PCA 방식 사용
+    #기존의 TF-IDF의 경우 어휘 수 만큼 차원을 생성하기 때문 > 너무 많은 차원을 생성하게 됨.
+    # 앞의 TF-IDF를 기반으로 한 중요도에 의거하여 중요도가 높은 어휘들만 압축하고 차원을 축소함.
     
     def __init__(self, embedding_dim=512):
         self.embedding_dim = embedding_dim
@@ -203,127 +206,3 @@ if __name__ == "__main__":
         print("🎉 M4 임베딩 모듈 테스트 성공!")
     else:
         print("❌ M4 임베딩 모듈 테스트 실패!")
-        
-# import pandas as pd
-# import numpy as np
-# import tensorflow as tf
-# import tensorflow_hub as hub
-# import pickle
-# import logging
-# from datetime import datetime
-
-# logger = logging.getLogger(__name__)
-
-
-# class SummaryEmbedder:
-#     """CSV summary 컬럼을 임베딩하는 클래스"""
-    
-#     def __init__(self):
-#         """임베딩 모델 초기화"""
-#         self.model_url = "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3"
-#         self.embed_model = None
-#         self._load_model()
-    
-#     def _load_model(self):
-#         """TensorFlow Hub 모델 로드"""
-#         logger.info("임베딩 모델 로드 중...")
-#         self.embed_model = hub.load(self.model_url)
-#         logger.info("모델 로드 완료")
-    
-#     def load_csv(self, csv_path):
-#         """CSV 파일 로드"""
-#         df = pd.read_csv(csv_path)
-#         logger.info(f"CSV 로드: {df.shape[0]}행, {df.shape[1]}열")
-#         return df
-    
-#     def extract_summaries(self, df, summary_column='summary'):
-#         """DataFrame에서 summary 컬럼 추출"""
-#         summaries = df[summary_column].fillna('').astype(str)
-#         summaries = summaries[summaries.str.strip() != '']  # 빈 문자열 제거
-        
-#         logger.info(f"유효한 요약 텍스트: {len(summaries)}개")
-#         return summaries.tolist()
-    
-#     def create_embeddings(self, texts, batch_size=32):
-#         """텍스트를 임베딩 벡터로 변환"""
-#         embeddings = []
-#         total_batches = (len(texts) + batch_size - 1) // batch_size
-        
-#         for i in range(0, len(texts), batch_size):
-#             batch = texts[i:i + batch_size]
-#             batch_num = (i // batch_size) + 1
-            
-#             logger.info(f"임베딩 생성 중: {batch_num}/{total_batches}")
-            
-#             try:
-#                 batch_embeddings = self.embed_model(batch)
-#                 embeddings.extend(batch_embeddings.numpy())
-#             except Exception as e:
-#                 logger.error(f"배치 {batch_num} 실패: {e}")
-#                 embeddings.extend([np.zeros(512) for _ in batch])
-        
-#         embeddings_array = np.array(embeddings)
-#         logger.info(f"임베딩 완료: {embeddings_array.shape}")
-#         return embeddings_array
-    
-#     def save_embeddings(self, embeddings, texts, original_df, output_path):
-#         """임베딩 결과 저장"""
-#         # 1. NumPy 배열 저장 (모델 학습용)
-#         # npy 사용 이유 : 한 번 임베딩 하면 게속 사용이 가능하며, 텍스트 재처리 없이 바로 숫자 로드하여 속도적인 측면에서 효율적임.
-#         np.save(f"{output_path}_embeddings.npy", embeddings)
-        
-#         # 2. 전체 데이터 Pickle 저장
-#         data = {
-#             'embeddings': embeddings,
-#             'texts': texts,
-#             'original_data': original_df,
-#             'embedding_dim': embeddings.shape[1],
-#             'timestamp': datetime.now().isoformat()
-#         }
-        
-#         with open(f"{output_path}_data.pkl", 'wb') as f:
-#             pickle.dump(data, f)
-        
-#         logger.info(f"저장 완료: {output_path}_embeddings.npy, {output_path}_data.pkl")
-    
-#     def process_csv_to_embeddings(self, csv_path, summary_column='summary', output_path=None):
-#         """CSV → 임베딩 전체 프로세스"""
-#         try:
-#             # 1. 데이터 로드
-#             df = self.load_csv(csv_path)
-#             summaries = self.extract_summaries(df, summary_column)
-            
-#             # 2. 임베딩 생성
-#             embeddings = self.create_embeddings(summaries)
-            
-#             # 3. 결과 저장
-#             if output_path is None:
-#                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-#                 output_path = f"embeddings_{timestamp}"
-            
-#             self.save_embeddings(embeddings, summaries, df, output_path)
-            
-#             return {
-#                 'success': True,
-#                 'total_texts': len(summaries),
-#                 'embedding_shape': embeddings.shape,
-#                 'output_path': output_path
-#             }
-            
-#         except Exception as e:
-#             logger.error(f"처리 실패: {e}")
-#             return {'success': False, 'error': str(e)}
-
-
-# # 사용 예시
-# if __name__ == "__main__":
-#     logging.basicConfig(level=logging.INFO)
-    
-#     embedder = SummaryEmbedder()
-#     result = embedder.process_csv_to_embeddings(
-#         csv_path="result_summary.csv",
-#         summary_column="summary",
-#         output_path="training_embeddings"
-#     )
-    
-#     print("결과:", result)

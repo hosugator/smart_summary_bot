@@ -5,7 +5,7 @@
 .venv
 
 # 파일
-# *.csv
+ *.csv
 
 # 테스트 파일 캐시
 .pytest_cache

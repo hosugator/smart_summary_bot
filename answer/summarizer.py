@@ -96,7 +96,7 @@ class ArticleSummarizer:
 summarizer = ArticleSummarizer(model="gpt-4o")  # api_key는 None이면 .env에서 자동 로드
 
 # CSV 파일 경로 지정
-csv_path = "answer/test_articles.csv"  # 또는 "answer/test_articles.csv" 경로에 따라 수정
+csv_path = "/Users/woody/smart_summary_bot/naver_news_articles_cleaned.csv"  # 또는 "answer/test_articles.csv" 경로에 따라 수정
 
 # 요약 실행
 output_path = summarizer.process_csv(

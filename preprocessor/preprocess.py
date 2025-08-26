@@ -200,7 +200,7 @@ def tokenize_and_normalize(input_text, lang: str = "en") -> list:
     else:
         return tokenize_english_safe(text_str)
 
-def load_csv(csv_path: str) -> pd.DataFrame:
+def load_csv(csv_path: str) -> pd.DataFrame: 
     """CSV 파일 불러오고 전처리 - pandas apply 사용하지 않음"""
     print(f"Loading CSV: {csv_path}")
     

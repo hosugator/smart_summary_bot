@@ -2,3 +2,5 @@
 *.csv
 *.log
 __pycache__/
+.error_handler.py
+.usage_monitor.py

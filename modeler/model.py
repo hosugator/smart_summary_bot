@@ -4,6 +4,7 @@
 # TensorFlow/PyTorch 라이브러리 호환성 문제 발생 
 # 비교적 호환성이 좋은 Scikit-learn 라이브러리 사용
 # 텍스트 분류에 최적화(단어별)
+# CPU에 최적화
 import numpy as np
 import pickle
 import logging
